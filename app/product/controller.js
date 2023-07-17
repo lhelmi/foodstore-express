@@ -4,17 +4,23 @@ const fs = require('fs');
 const path = require('path');
 
 async function store(req, res, next){
-    let payload = req.body;
     try {
+        let payload = req.body;
         if(req.file){
             let tmpPath = req.file.path;
             let originalExt = req.file.originalname.split('.') [req.file.originalname.split('.').length - 1];
             let filename = req.file.filename + '.' + originalExt;
             let targetPath = path.resolve(config.rootPath, `public/upload/${filename}`);
 
-            const src = fs.createReadStream(tmpPath);
-            const dest = fs.createWriteStream(targetPath);
-            src.pipe(dest);
+            const src = fs.createReadStream(tmpPath); // (1) baca file yang masih di lokasi sementara 
+            const dest = fs.createWriteStream(targetPath); // (2) pindahkan file ke lokasi permanen/tujuan
+            src.pipe(dest); // (3) file mulai dipindahkan dari `src` ke `dest`
+
+            //naon boa
+            src.on('error', async() => {
+                console.log(err);
+                return next(err);
+            });
 
             src.on('end', async () => {
                 let product = new Product(
@@ -22,10 +28,6 @@ async function store(req, res, next){
                 );
                 await product.save();
                 return res.json(product);
-            });
-
-            src.on('error', async() => {
-                next(err);
             });
                
         }else{

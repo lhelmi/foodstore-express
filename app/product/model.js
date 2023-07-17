@@ -18,7 +18,8 @@ const productSchema = Schema({
         default: 0
     },
     image_url : {
-        type: String
+        type: String,
+        required: [true, 'gambar harus diisi dengan extensi png, jpg, jpeg']
     }
 },
 {
