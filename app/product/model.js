@@ -1,0 +1,27 @@
+const mongoose = require('mongoose');
+const { model, Schema } = mongoose;
+const productSchema = Schema({
+    name : {
+        type: String,
+        minLength : [3, 'Panjang nama product minimal 3 karakter'],
+        maxLength : [255, 'Panjang nama product maksimal 255 karakter'],
+        require: [true, 'Nama product harus diisi']
+    },
+    description : {
+        type: String,
+        maxLength : [1000, 'Panjang nama product maksimal 1000 karakter']
+    },
+    price : {
+        type: Number,
+        default: 0
+    },
+    image_url : {
+        type: String
+    }
+},
+{
+    timestamps: true
+});
+
+const Product = model('Product', productSchema);
+module.exports = Product;
