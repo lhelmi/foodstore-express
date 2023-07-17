@@ -3,6 +3,17 @@ const config = require('../config');
 const fs = require('fs');
 const path = require('path');
 
+async function show(req, res, next){
+    try {
+        let product = await Product.findOne({_id: req.params.id})
+        if(!product) return res.status(404).send({ message: 'Data tidak ditemukan', data: null });
+        return res.json(product);
+        
+    } catch (error) {
+        next(error);
+    }
+}
+
 async function update(req, res, next){
     try {
         let product = await Product.findOne({_id: req.params.id})
@@ -35,7 +46,7 @@ async function update(req, res, next){
             });
 
             src.on('error', async() => {
-                next(err);
+                next(error);
             });
 
         }else{
@@ -47,14 +58,14 @@ async function update(req, res, next){
             return res.json(product);
         }
     } catch (error) {
-        if(err && err.name === 'ValidationError'){
+        if(error && error.name === 'ValidationError'){
             return res.json({
                 error: 1, 
-                message: err.message, 
-                fields: err.errors
+                message: error.message, 
+                fields: error.errors
             });
         }
-        next(err);
+        next(error);
     }
 }
 
@@ -82,7 +93,7 @@ async function store(req, res, next){
             //naon boa
             src.on('error', async() => {
                 console.log(err);
-                return next(err);
+                return next(error);
             });
                
         }else{
@@ -142,5 +153,6 @@ module.exports = {
     store,
     index,
     update,
-    destroy
+    destroy,
+    show
 };

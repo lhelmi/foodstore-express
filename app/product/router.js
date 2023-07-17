@@ -14,9 +14,10 @@ const upload = multer({
     fileFilter:imageFilter
 });
 
-router.post('/products', upload.single('image'), productController.store)
+router.post('/products', upload.single('image'), productController.store);
 router.get('/products', productController.index);
-router.put('/products/:id', upload.single('image'), productController.update)
-router.delete('/products/:id', productController.destroy)
+router.put('/products/:id', upload.single('image'), productController.update);
+router.delete('/products/:id', productController.destroy);
+router.get('/products/:id', productController.show);
 
 module.exports = router;
