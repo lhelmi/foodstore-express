@@ -1,4 +1,5 @@
 const dotenv = require('dotenv');
+const path = require('path');
 dotenv.config();
 
 module.exports = {
@@ -8,4 +9,5 @@ module.exports = {
     dbUser: process.env.DB_USER,
     dbPass: process.env.DB_PASS,
     dbName: process.env.DB_NAME,
+    rootPath: path.resolve(__dirname, '..'),
 }
