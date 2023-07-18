@@ -20,7 +20,17 @@ const productSchema = Schema({
     image_url : {
         type: String,
         required: [true, 'gambar harus diisi dengan extensi png, jpg, jpeg']
-    }
+    },
+    category : {
+        type: Schema.Types.ObjectId,
+        ref: 'Category'
+    },
+    tags : [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Tag'
+        }
+    ]
 },
 {
     timestamps: true

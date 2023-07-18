@@ -2,10 +2,23 @@ const Product = require('./model');
 const config = require('../config');
 const fs = require('fs');
 const path = require('path');
+const Category = require('../category/model');
+const Tag = require('../tag/model');
 
 async function show(req, res, next){
     try {
         let product = await Product.findOne({_id: req.params.id})
+        if(!product) return res.status(404).send({ message: 'Data tidak ditemukan', data: null });
+        return res.json(product);
+        
+    } catch (error) {
+        next(error);
+    }
+}
+
+async function showWithCategory(req, res, next){
+    try {
+        let product = await Product.findOne({_id: req.params.id}).populate('category');
         if(!product) return res.status(404).send({ message: 'Data tidak ditemukan', data: null });
         return res.json(product);
         
@@ -19,6 +32,31 @@ async function update(req, res, next){
         let product = await Product.findOne({_id: req.params.id})
         if(!product) return res.status(404).send({ message: 'Data tidak ditemukan', data: null });
         let payload = req.body;
+        if(payload.category){
+            let category = await Category.findOne({
+                name: {
+                    $regex: payload.category, $options: 'i'
+                }
+            });
+            if(category){
+                payload = {...payload, category : category._id};
+            }else{
+                delete payload.category;
+            }
+        }
+
+        if(payload.tags){
+            let tags = await Tag.find({
+                name : {
+                    $in : payload.tags
+                }
+            });
+
+            if(tags.length){
+               payload = {...payload, tags: tags.map(tag=> tag._id)} 
+            }
+        }
+
         if(req.file){
             let tmpPath = req.file.path;
             let originalExt = req.file.originalname.split('.') [req.file.originalname.split('.').length - 1];
@@ -72,6 +110,31 @@ async function update(req, res, next){
 async function store(req, res, next){
     try {
         let payload = req.body;
+        if(payload.category){
+            let category = await Category.findOne({
+                name : {
+                    $regex: payload.category, $options: 'i'
+                }
+            });
+            if(category){
+                payload = {...payload, category:category._id};
+            }else{
+                delete payload.category;
+            }
+        }
+
+        if(payload.tags && payload.tags.length){
+            let tags = await Tag.find({
+                name: {
+                    $in: payload.tags
+                }
+            })
+
+            if(tags.length){
+                payload = {...payload, tags: tags.map(tag => tag._id)};
+            }
+        }
+
         if(req.file){
             let tmpPath = req.file.path;
             let originalExt = req.file.originalname.split('.') [req.file.originalname.split('.').length - 1];
@@ -139,8 +202,45 @@ async function destroy(req, res, next){
 
 async function index(req, res, next){
     try {
-        let { limit = 10, skip = 0 } = req.query;
-        let products = await Product.find().limit(limit).skip(skip);
+        let { limit = 10, skip = 0, q = '', category = '', tags = [] } = req.query;
+        let criteria = {};
+        if(q.length){
+            criteria = {
+                ...criteria, 
+                name: {$regex: `${q}`, $options: 'i'}
+            }
+        }
+        
+        if(category.length){
+            category = await Category.findOne({name: {$regex:`${category}`, $options: 'i'}});
+            
+            if(category) {
+                criteria = {...criteria, category: category._id}
+            }
+        }
+
+        if(tags.length){
+            tags = await Tag.find({
+                name: {
+                    $in : tags
+                }
+            });
+            
+            if(tags.length){
+                criteria = {
+                    ...criteria,
+                    tags: {
+                        $in : tags.map(tag => tag._id)
+                    }
+                }
+            }
+        }
+
+        let products = await Product.find(criteria).limit(parseInt(limit)).skip(parseInt(skip))
+        .populate('category')
+        .populate('tags');
+
+        if(!products.length) return res.json({'message' : 'data tidak ditemukan'});
 
         return res.json(products);
     } catch (error) {
@@ -154,5 +254,6 @@ module.exports = {
     index,
     update,
     destroy,
-    show
+    show,
+    showWithCategory
 };

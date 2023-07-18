@@ -15,9 +15,14 @@ const upload = multer({
 });
 
 router.post('/products', upload.single('image'), productController.store);
+//----------------------------------------------------------------------------------------------------
+// contoh : {{url}}/api/products?limit=10&skip=0&q=test10000&category=racun&tags[]=taggggggg
 router.get('/products', productController.index);
+//----------------------------------------------------------------------------------------------------
 router.put('/products/:id', upload.single('image'), productController.update);
 router.delete('/products/:id', productController.destroy);
 router.get('/products/:id', productController.show);
+router.get('/products/category/:id', productController.showWithCategory);
+
 
 module.exports = router;
