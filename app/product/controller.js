@@ -266,7 +266,9 @@ async function index(req, res, next){
 
         if(!products.length) return res.json({'message' : 'data tidak ditemukan'});
 
-        return res.json(products);
+        let count = await Product.find(criteria).countDocuments();
+
+        return res.json({'data' : products, 'count' : count});
     } catch (error) {
         console.log(error.message);
         next(error);
