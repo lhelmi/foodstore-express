@@ -2,6 +2,13 @@ const Category = require('./model');
 
 async function store(req, res, next){
     try {
+        let policy = policyFor(req.user);
+        if(!policy.can('create', 'Category')){
+            return res.json({
+                error: 1, 
+                message: `Anda tidak memiliki akses untuk membuat produk`
+            });
+        }
         params = req.body;
         let category = new Category(params);
         await category.save();
@@ -47,6 +54,13 @@ async function show(req, res, next){
 
 async function destroy(req, res, next){
     try {
+        let policy = policyFor(req.user);
+        if(!policy.can('delete', 'Category')){
+            return res.json({
+                error: 1, 
+                message: `Anda tidak memiliki akses untuk membuat produk`
+            });
+        }
         let category = await Category.findOneAndDelete({
             _id : req.params.id
         });
@@ -61,6 +75,13 @@ async function destroy(req, res, next){
 
 async function update(req, res, next){
     try {
+        let policy = policyFor(req.user);
+        if(!policy.can('update', 'Category')){
+            return res.json({
+                error: 1, 
+                message: `Anda tidak memiliki akses untuk membuat produk`
+            });
+        }
         params = req.body;
         let category = await Category.findOneAndUpdate(
             {_id: req.params.id},
