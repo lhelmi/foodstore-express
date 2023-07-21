@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const Category = require('../category/model');
 const Tag = require('../tag/model');
+const { policyFor } = require('../policy/index');
 
 async function show(req, res, next){
     try {
@@ -29,6 +30,13 @@ async function showWithCategory(req, res, next){
 
 async function update(req, res, next){
     try {
+        let policy = policyFor(req.user);
+        if(!policy.can('update', 'Product')){
+            return res.json({
+                error: 1, 
+                message: `Anda tidak memiliki akses untuk membuat produk`
+            });
+        }
         let product = await Product.findOne({_id: req.params.id})
         if(!product) return res.status(404).send({ message: 'Data tidak ditemukan', data: null });
         let payload = req.body;
@@ -107,8 +115,17 @@ async function update(req, res, next){
     }
 }
 
+
 async function store(req, res, next){
     try {
+        let policy = policyFor(req.user);
+        if(!policy.can('create', 'Product')){
+            return res.json({
+                error: 1, 
+                message: `Anda tidak memiliki akses untuk membuat produk`
+            });
+        }
+
         let payload = req.body;
         if(payload.category){
             let category = await Category.findOne({
@@ -179,6 +196,13 @@ async function store(req, res, next){
 
 async function destroy(req, res, next){
     try {
+        let policy = policyFor(req.user);
+        if(!policy.can('delete', 'Product')){
+            return res.json({
+                error: 1, 
+                message: `Anda tidak memiliki akses untuk membuat produk`
+            });
+        }
         let product = await Product.findOneAndDelete({
             _id : req.params.id
         })

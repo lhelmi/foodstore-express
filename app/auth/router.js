@@ -1,9 +1,13 @@
-// (1) import package yang diperlukan 
 const router = require('express').Router();
 const multer = require('multer');
-// (2) import auth/controller.js
+const passport = require('passport');
+const localStrategy = require('passport-local').Strategy;
 const controller = require('./controller');
-// (3) buat endpoint untuk register user baru
+
+passport.use(new localStrategy({usernameField : 'email'}, controller.localStrategy));
+router.post('/login', multer().none(), controller.login);
 router.post('/register', multer().none(), controller.register);
-// (4) export router
+router.get('/me', controller.me);
+router.post('/logout', controller.logout);
+
 module.exports = router;
