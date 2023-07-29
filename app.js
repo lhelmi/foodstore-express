@@ -11,6 +11,7 @@ const TagRouter = require('./app/tag/router');
 const authRouter = require('./app/auth/router');
 const regionRouter = require('./app/region/router');
 const deliveryAddressRouter = require('./app/delivery-address/router');
+const cartRouter = require('./app/cart/router');
 const app = express();
 
 
@@ -31,6 +32,7 @@ app.use('/api', TagRouter);
 app.use('/auth', authRouter);
 app.use('/api', regionRouter);
 app.use('/api', deliveryAddressRouter);
+app.use('/api', cartRouter);
 
 
 // catch 404 and forward to error handler

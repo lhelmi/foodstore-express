@@ -18,13 +18,9 @@ async function countCustumer(){
 
 async function register(req, res, next){
     try {
-        
         let payload = req.body;
-        let customer_id = await countCustumer();
-
-        if(!customer_id) return res.json({ error: 1, message: "error count customer id" });
         payload = {
-            ...payload, customer_id: customer_id
+            ...payload, customer_id: null
         }
         
         let user = new User(payload);

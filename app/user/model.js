@@ -56,19 +56,22 @@ userSchema.pre('save', function(next){
     next();
 });
 
-// userSchema.pre('save', async function(next){
-//     const count = await this.model('User').find()
-//     .sort({ customer_id: -1 })
-//     .limit(1);
-//     console.log(count);
-//     if (count.length > 0){
-//         let number = parseInt(count.customer_id) + 1;
-//         this.customer_id = number
-//     }else{
-//         this.customer_id = 1;
-//     }
-//     next();
-// });
+userSchema.pre('save', async function(next){
+    try {
+        const count = await this.model('User').find()
+        .sort({ customer_id: -1 })
+        .limit(1);
+        if (count.length > 0){
+            let number = parseInt(count[0].customer_id) + 1;
+            this.customer_id = number
+        }else{
+            this.customer_id = 1;
+        }
+    } catch (error) {
+        throw error;
+    }
+    next();
+});
 
 // userSchema.plugin(AutoIncrement, { inc_field: 'customer_id' });
 
