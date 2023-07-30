@@ -4,6 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const { decodeToken } = require('./app/auth/middleware');
+const cors = require('cors');
 
 const productRouter = require('./app/product/router');
 const categoryRouter = require('./app/category/router');
@@ -13,8 +14,8 @@ const regionRouter = require('./app/region/router');
 const deliveryAddressRouter = require('./app/delivery-address/router');
 const cartRouter = require('./app/cart/router');
 const orderRouter = require('./app/order/router');
+const invoiceRouter = require('./app/invoice/router');
 const app = express();
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -25,6 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors());
 app.use(decodeToken())
 
 app.use('/api', productRouter);
@@ -35,7 +37,7 @@ app.use('/api', regionRouter);
 app.use('/api', deliveryAddressRouter);
 app.use('/api', cartRouter);
 app.use('/api', orderRouter);
-
+app.use('/api', invoiceRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
