@@ -3,5 +3,6 @@ const multer = require('multer');
 
 const orderController = require('./controller');
 router.post('/orders', multer().none(), orderController.store);
+router.get('/orders', multer().none(), orderController.index);
 
 module.exports = router;
