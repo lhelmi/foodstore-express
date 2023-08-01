@@ -23,6 +23,22 @@ async function register(req, res, next){
             ...payload, customer_id: null
         }
         
+        if(payload.password !== payload.password_confirmation){
+            return res.json({
+                error: 1, 
+                message: "User validation failed: password tidak sama dengan password konfirmasi", 
+                fields: {
+                    password : {
+                        name: "ValidatorError",
+                        message: "Nilai password dan konfirmasi password tidak sama!",
+                        properties: {
+                            "message": "Nilai password dan konfirmasi password tidak sama!",
+                        },
+                    }
+                }
+            });
+        }
+
         let user = new User(payload);
         await user.save();
 
