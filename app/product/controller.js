@@ -264,7 +264,11 @@ async function index(req, res, next){
         .populate('category')
         .populate('tags');
 
-        if(!products.length) return res.json({'message' : 'data tidak ditemukan'});
+        if(!products.length) return res.json({
+            'count' : 0,
+            'data' : [],
+            'message' : 'data tidak ditemukan'
+        });
 
         let count = await Product.find(criteria).countDocuments();
 
